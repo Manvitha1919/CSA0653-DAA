@@ -1,0 +1,105 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define MAX_ITEMS 100 // Maximum number of items
+#define MAX_CONTAINERS 100 // Maximum number of containers
+
+// Structure to represent an item
+typedef struct {
+    int id;
+    int width;
+    int height;
+    int depth;
+} Item;
+
+// Structure to represent a container
+typedef struct {
+    int id;
+    int width;
+    int height;
+    int depth;
+    int remainingCapacity;
+    bool isFull;
+} Container;
+
+// Function prototypes
+void packItems(Item items[], int numItems, Container containers[], int numContainers);
+void printContainerContents(Container containers[], int numContainers);
+
+int main() {
+    int numItems, numContainers;
+
+    // Input the number of items and containers
+    printf("Enter the number of items: ");
+    scanf("%d", &numItems);
+    printf("Enter the number of containers: ");
+    scanf("%d", &numContainers);
+
+    // Input the dimensions of each item
+    Item items[MAX_ITEMS];
+    printf("Enter dimensions of each item (width height depth):\n");
+    for (int i = 0; i < numItems; i++) {
+        printf("Item %d: ", i + 1);
+        scanf("%d %d %d", &items[i].width, &items[i].height, &items[i].depth);
+        items[i].id = i + 1;
+    }
+
+    // Initialize containers with dimensions and remaining capacity
+    Container containers[MAX_CONTAINERS];
+    printf("Enter dimensions of each container (width height depth):\n");
+    for (int i = 0; i < numContainers; i++) {
+        printf("Container %d: ", i + 1);
+        scanf("%d %d %d", &containers[i].width, &containers[i].height, &containers[i].depth);
+        containers[i].id = i + 1;
+        containers[i].remainingCapacity = containers[i].width * containers[i].height * containers[i].depth;
+        containers[i].isFull = false;
+    }
+
+    // Pack items into containers
+    packItems(items, numItems, containers, numContainers);
+
+    // Output the contents of each container
+    printf("\nContents of each container:\n");
+    printContainerContents(containers, numContainers);
+
+    return 0;
+}
+
+// Function to pack items into containers using a greedy heuristic
+void packItems(Item items[], int numItems, Container containers[], int numContainers) {
+    for (int i = 0; i < numItems; i++) {
+        bool itemPacked = false;
+        for (int j = 0; j < numContainers; j++) {
+            if (!containers[j].isFull &&
+                items[i].width <= containers[j].width &&
+                items[i].height <= containers[j].height &&
+                items[i].depth <= containers[j].depth) {
+
+                containers[j].remainingCapacity -= items[i].width * items[i].height * items[i].depth;
+                if (containers[j].remainingCapacity == 0) {
+                    containers[j].isFull = true;
+                }
+                
+                printf("Item %d packed into Container %d\n", items[i].id, containers[j].id);
+                itemPacked = true;
+                break;
+            }
+        }
+        if (!itemPacked) {
+            printf("Item %d could not be packed into any container.\n", items[i].id);
+        }
+    }
+}
+
+// Function to print the contents of each container
+void printContainerContents(Container containers[], int numContainers) {
+    for (int i = 0; i < numContainers; i++) {
+        printf("Container %d contents:\n", containers[i].id);
+        if (containers[i].isFull) {
+            printf("  Container is fully packed.\n");
+        } else {
+            printf("  Remaining capacity: %d\n", containers[i].remainingCapacity);
+        }
+    }
+}
