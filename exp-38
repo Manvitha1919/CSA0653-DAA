@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_N 10 // Maximum number of agents or jobs
+
+int cost[MAX_N][MAX_N]; // Cost matrix
+int n; // Number of agents (or jobs)
+
+int minCost; // Minimum cost found so far
+int minAssignment[MAX_N]; // Best assignment found so far
+
+bool assigned[MAX_N]; // Array to track assigned jobs
+
+void branchAndBound(int agent, int currentCost, int assignment[]) {
+    // Base case: All agents are assigned
+    if (agent == n) {
+        if (currentCost < minCost) {
+            minCost = currentCost;
+            for (int i = 0; i < n; i++) {
+                minAssignment[i] = assignment[i];
+            }
+        }
+        return;
+    }
+
+    // Branch and bound algorithm
+    for (int job = 0; job < n; job++) {
+        if (!assigned[job]) {
+            assigned[job] = true;
+            assignment[agent] = job;
+            branchAndBound(agent + 1, currentCost + cost[agent][job], assignment);
+            assigned[job] = false;
+        }
+    }
+}
+
+int main() {
+    // Input number of agents (or jobs)
+    printf("Enter the number of agents (or jobs): ");
+    scanf("%d", &n);
+
+    // Input cost matrix
+    printf("Enter the cost matrix (%d x %d):\n", n, n);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &cost[i][j]);
+        }
+    }
+
+    // Initialize variables
+    minCost = 99999; // Large initial value for minimum cost
+    int assignment[MAX_N]; // Array to store current assignment
+
+    // Perform branch and bound
+    branchAndBound(0, 0, assignment);
+
+    // Print the minimum cost and optimal assignment
+    printf("\nMinimum cost: %d\n", minCost);
+    printf("Optimal assignment:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Agent %d -> Job %d\n", i + 1, minAssignment[i] + 1);
+    }
+
+    return 0;
+}
