@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define V 4 // Number of vertices (cities)
+
+// Function to find minimum of two numbers
+int min(int a, int b) {
+    return (a < b) ? a : b;
+}
+
+// Function to solve TSP using dynamic programming and memoization
+int tsp(int graph[V][V], int mask, int pos, int n, int dp[V][1 << V]) {
+    // If all cities have been visited
+    if (mask == (1 << n) - 1)
+        return graph[pos][0]; // Return to starting city
+
+    // If this state has been computed already
+    if (dp[pos][mask] != -1)
+        return dp[pos][mask];
+
+    int minCost = INT_MAX;
+
+    // Try to go to every other city from the current city
+    for (int city = 0; city < n; city++) {
+        // Check if the city has not been visited yet
+        if ((mask & (1 << city)) == 0) {
+            int newCost = graph[pos][city] + tsp(graph, mask | (1 << city), city, n, dp);
+            minCost = min(minCost, newCost);
+        }
+    }
+
+    // Memoize the computed cost
+    return dp[pos][mask] = minCost;
+}
+
+// Function to initialize memoization table and solve TSP
+int solveTSP(int graph[V][V], int n) {
+    // Create a memoization table with all entries as -1
+    int dp[V][1 << V];
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < (1 << V); j++) {
+            dp[i][j] = -1;
+        }
+    }
+
+    // Start from the first city (0th index) and compute the minimum cost
+    return tsp(graph, 1, 0, n, dp); // 1 is added to mask for the starting city
+}
+
+int main() {
+    // Example graph representing distances between cities (0-indexed)
+    int graph[V][V] = {
+        {0, 10, 15, 20},
+        {10, 0, 35, 25},
+        {15, 35, 0, 30},
+        {20, 25, 30, 0}
+    };
+
+    // Find the minimum cost of the TSP tour
+    int minCost = solveTSP(graph, V);
+
+    printf("Minimum cost of Travelling Salesman Problem is: %d\n", minCost);
+
+    return 0;
+}
