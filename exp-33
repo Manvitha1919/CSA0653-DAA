@@ -1,0 +1,50 @@
+#include <stdio.h>
+
+#define MAX_SIZE 100 // Maximum size of the list
+
+int main() {
+    int n; // Size of the list
+    int list[MAX_SIZE];
+    int num, pos;
+
+    // Input the size of the list
+    printf("Enter the number of elements in the list: ");
+    scanf("%d", &n);
+
+    // Input the elements of the list
+    printf("Enter %d elements:\n", n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &list[i]);
+    }
+
+    // Input the number to insert
+    printf("Enter the number to insert: ");
+    scanf("%d", &num);
+
+    // Input the position where the number should be inserted (1-indexed)
+    printf("Enter the position to insert (1 to %d): ", n + 1);
+    scanf("%d", &pos);
+
+    // Check if the position is valid
+    if (pos < 1 || pos > n + 1) {
+        printf("Invalid position!\n");
+    } else {
+        // Shift elements to the right from position `pos-1` to `n`
+        for (int i = n; i >= pos; i--) {
+            list[i] = list[i - 1];
+        }
+
+        // Insert the number at the specified position
+        list[pos - 1] = num;
+        n++; // Increase the size of the list
+
+        // Print the updated list
+        printf("List after insertion:\n");
+        for (int i = 0; i < n; i++) {
+            printf("%d ", list[i]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
